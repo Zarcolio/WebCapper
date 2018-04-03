@@ -65,6 +65,17 @@ def main():
 	if (args.domain and args.input):
 		print ("Use only --domain or --input, but not both.")
 		exit()
+
+	if (not args.domain and not args.input):
+		print ("")
+		print ("python webcapper.py [input option]")
+		print ("")
+		print ("Input options are mutually exclusive:")
+		print ("")
+		print ("-d --domain		Enter a single domain name to webcap.")
+		print ("-i --input		Enter a file name containing one or more domain names to webcap.")
+		print ("")
+		exit()
 		
 	if (args.input):
 		# Create and change to new directory based on input file name
