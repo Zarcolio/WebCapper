@@ -49,6 +49,7 @@ def webcapper(domain):
 		array = []
 		for host in ins:
 			host = host.rstrip('\n')
+			host = host.rstrip('\r')
 			host = host.replace("*.", "")
 			if check_socket(host, 443):
 				print ("Saving "+host)
@@ -76,6 +77,7 @@ def main():
 		input_file = open ("../" + args.input, "r")
 		for input_domain in input_file:
 			input_domain = input_domain.rstrip('\n')
+			input_domain = input_domain.rstrip('\r')
 			webcapper(input_domain)
 			os.chdir("..")
 	else:
