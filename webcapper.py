@@ -23,39 +23,29 @@ def check_socket(host, port):
 
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-d', '--domain', type=str, required=True, help="Target domain.")
-	parser.add_argument('-o', '--output', type=str, help="Output file.")
+	parser.add_argument('-d', '--domain', type=str, help="Target domain.")
+	parser.add_argument('-i', '--input',  type=str, help="Input file.")
 	return parser.parse_args()
 
-def save_file(subdomain,output_file):
-	with open(output_file,"a") as f:
-		f.write(subdomain + '\n')
-		f.close()
-
-def main():
-	args = parse_args()
-	subdomains = []
-	target = args.domain
-	output = args.output
-
+def webcapper(domain):
 	# Create and change to new directory based on domain name
 	try:
-		os.mkdir(target)
+		os.mkdir(domain)
 	except Exception:
 		pass
-	os.chdir(target)
+	os.chdir(domain)
 
 	# If target file exists remove file, because ctfr.py appends to file
 	try:
-		os.remove (target + "-ctfr-hosts.txt")
+		os.remove (domain + "-ctfr-hosts.txt")
 	except Exception:
 		pass
 
 	# Get hostnames with ctfr.py
-	os.system("python "+foldergits + "/ctfr/ctfr.py -d " + target + " -o " + target + "-ctfr-hosts.txt")
+	os.system("python "+foldergits + "/ctfr/ctfr.py -d " + domain + " -o " + domain + "-ctfr-hosts.txt")
 
 	# Open output file
-	with open (target + "-ctfr-hosts.txt") as ins:
+	with open (domain + "-ctfr-hosts.txt") as ins:
 		array = []
 		for host in ins:
 			host = host.rstrip('\n')
@@ -67,6 +57,20 @@ def main():
 			else:
 				print ("Not saving "+host)
 
+def main():
+	args = parse_args()
+	subdomains = []
+	
+	if (args.domain and args.input):
+		print ("Use only --domain or --input, but not both.")
+		exit()
+		
+	if (args.input):
+		input_file = open (args.input, "r")
+		for input_domain in input_file:
+			input_domain = input_domain.rstrip('\n')
+			webcapper(input_domain)
+	else:
+		webcapper(args.domain)
 
 main()
-	
