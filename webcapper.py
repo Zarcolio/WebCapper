@@ -66,11 +66,20 @@ def main():
 		exit()
 		
 	if (args.input):
-		input_file = open (args.input, "r")
+		# Create and change to new directory based on input file name
+		try:
+			os.mkdir(args.input+".save")
+		except Exception:
+			pass
+		os.chdir(args.input+".save")
+		
+		input_file = open ("../" + args.input, "r")
 		for input_domain in input_file:
 			input_domain = input_domain.rstrip('\n')
 			webcapper(input_domain)
+			os.chdir("..")
 	else:
 		webcapper(args.domain)
 
 main()
+	
