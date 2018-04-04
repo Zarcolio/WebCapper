@@ -45,18 +45,22 @@ def webcapper(domain):
 	os.system("python "+foldergits + "/ctfr/ctfr.py -d " + domain + " -o " + domain + "-ctfr-hosts.txt")
 
 	# Open output file
-	with open (domain + "-ctfr-hosts.txt") as ins:
-		array = []
-		for host in ins:
-			host = host.rstrip('\n')
-			host = host.rstrip('\r')
-			host = host.replace("*.", "")
-			if check_socket(host, 443):
-				print ("Saving "+host)
-				# Warning: cutycapt output goes to /dev/nul
-				os.system("cutycapt --url=https://" + host + " --out=" + host + ".png --insecure > /dev/nul 2>&1")
-			else:
-				print ("Not saving "+host)
+	try:
+		with open (domain + "-ctfr-hosts.txt") as ins:
+			array = []
+			for host in ins:
+				host = host.rstrip('\n')
+				host = host.rstrip('\r')
+				host = host.replace("*.", "")
+				if check_socket(host, 443):
+					print ("Saving "+host)
+					# Warning: cutycapt output goes to /dev/nul
+					os.system("cutycapt --url=https://" + host + " --out=" + host + ".png --insecure > /dev/nul 2>&1")
+				else:
+					print ("Not saving "+host)
+	except Exception:
+		pass
+
 
 def main():
 	args = parse_args()
@@ -93,6 +97,7 @@ def main():
 			os.chdir("..")
 	else:
 		webcapper(args.domain)
+
 
 main()
 	
