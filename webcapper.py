@@ -47,7 +47,7 @@ def webcapper(domain):
 	os.system(foldergits + "subfinder -d " + domain + " -o " + domain + "-subf-hosts.txt")
 
 	outresolved    = open(domain + "-subf-hosts-resolved.txt", "w")
-	outnotresolved = open(domain + "-subf-hosts-resolved.txt", "w")
+	outnotresolved = open(domain + "-subf-hosts-notresolved.txt", "w")
 	# Open file with hosts found
 	try:
 		with open (domain + "-subf-hosts.txt") as ins:
@@ -62,16 +62,16 @@ def webcapper(domain):
 				try:
 					ipaddress = socket.gethostbyname(host)
 					if ipaddress:
-						outresolved.write(host+";"+ipaddress)
+						outresolved.write(host+";"+ipaddress+"\n")
 						for port in portlist:
 							if check_socket(host, port):
 								print ("Saving "+host+":"+str(port))
 								# Warning: cutycapt output goes to /dev/nul
 								os.system("cutycapt --url=https://" + host + " --out=" + host + "-"+str(port)+".png --insecure > /dev/nul 2>&1")
 							else:
-								print ("Not saving "+host+":"+str(port)	)
+								print ("Not saving "+host+":"+str(port))
 					else:
-						outnotresolved.write(host+";"+ipaddress)
+						outnotresolved.write(host+"\n")
 
 				except Exception:
 					print host + " doesn't resolve..."
