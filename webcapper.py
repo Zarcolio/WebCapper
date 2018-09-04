@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-foldergits="/opt/gits"
+foldergits="/root/Scripts/Gits/subdomain_takeover/subfinder/"
+portlist = [80, 443]
+
 import os
 import subprocess
 import socket
@@ -35,31 +37,49 @@ def webcapper(domain):
 		pass
 	os.chdir(domain)
 
-	# If target file exists remove file, because ctfr.py appends to file
+	# If target file exists remove file, because subf.py appends to file
 	try:
-		os.remove (domain + "-ctfr-hosts.txt")
+		os.remove (domain + "-subf-hosts.txt")
 	except Exception:
 		pass
 
-	# Get hostnames with ctfr.py
-	os.system("python "+foldergits + "/ctfr/ctfr.py -d " + domain + " -o " + domain + "-ctfr-hosts.txt")
+	# Get hostnames with subfinder
+	os.system(foldergits + "subfinder -d " + domain + " -o " + domain + "-subf-hosts.txt")
 
-	# Open output file
+	outresolved    = open(domain + "-subf-hosts-resolved.txt", "w")
+	outnotresolved = open(domain + "-subf-hosts-resolved.txt", "w")
+	# Open file with hosts found
 	try:
-		with open (domain + "-ctfr-hosts.txt") as ins:
+		with open (domain + "-subf-hosts.txt") as ins:
 			array = []
 			for host in ins:
 				host = host.rstrip('\n')
 				host = host.rstrip('\r')
 				host = host.replace("*.", "")
-				if check_socket(host, 443):
-					print ("Saving "+host)
-					# Warning: cutycapt output goes to /dev/nul
-					os.system("cutycapt --url=https://" + host + " --out=" + host + ".png --insecure > /dev/nul 2>&1")
-				else:
-					print ("Not saving "+host)
+				if host[:1] == ".":
+					host = host[1:]
+
+				try:
+					ipaddress = socket.gethostbyname(host)
+					if ipaddress:
+						outresolved.write(host+";"+ipaddress)
+						for port in portlist:
+							if check_socket(host, port):
+								print ("Saving "+host+":"+str(port))
+								# Warning: cutycapt output goes to /dev/nul
+								os.system("cutycapt --url=https://" + host + " --out=" + host + "-"+str(port)+".png --insecure > /dev/nul 2>&1")
+							else:
+								print ("Not saving "+host+":"+str(port)	)
+					else:
+						outnotresolved.write(host+";"+ipaddress)
+
+				except Exception:
+					print host + " doesn't resolve..."
+					pass
+
 	except Exception:
 		pass
+
 
 
 def main():
