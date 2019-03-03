@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
 foldergits="/root/subfinder/"
 portlist = [80, 443]
